@@ -78,7 +78,7 @@ def main():
             "pyyaml>=6.0",
             "colorama>=0.4.6",
             "ujson>=5.0.0",
-            "litellm>=2.0.0",
+            "litellm",
         ],
         python_requires=">=3.8",
         entry_points={

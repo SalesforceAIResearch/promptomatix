@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/License-Apache-green.svg" alt="License">
 </div>
 
-https://github.com/airesearch-emu/promptomatix.git<p align="center">
+<p align="center">
   <a href="#-overview">Overview</a> |
   <a href="#-installation">Installation</a> |
   <a href="#-example-usage">Examples</a> |
@@ -53,7 +53,7 @@ The installer will:
 - ✅ Create a virtual environment (`promptomatix_env`)
 - ✅ Initialize git submodules (DSPy)
 - ✅ Install all dependencies
-- ✅ Set up the `promtomatic` command
+- ✅ Set up the `promptomatix` command
 
 ### 🔧 Activate the Environment
 
@@ -82,7 +82,7 @@ cp .env.example .env
 
 ```bash
 # Test the installation
-python -m src.promtomatic.main --raw_input "Given a questions about human anatomy answer it in two words" --model_name "gpt-3.5-turbo" --backend "simple_meta_prompt" --synthetic_data_size 10 --model_provider "openai"
+python -m src.promptomatix.main --raw_input "Given a questions about human anatomy answer it in two words" --model_name "gpt-3.5-turbo" --backend "simple_meta_prompt" --synthetic_data_size 10 --model_provider "openai"
 ```
 
 ### 💡 Pro Tips
@@ -121,16 +121,16 @@ jupyter notebook 01_basic_usage.ipynb
 
 ```bash
 # Basic optimization
-python -m src.promtomatic.main --raw_input "Classify text sentiment into positive or negative"
+python -m src.promptomatix.main --raw_input "Classify text sentiment into positive or negative"
 
 # With custom model and parameters
-python -m src.promtomatic.main --raw_input "Summarize this article" \
+python -m src.promptomatix.main --raw_input "Summarize this article" \
   --model_name "gpt-4" \
   --temperature 0.3 \
   --task_type "summarization"
 
 # Advanced configuration
-python -m src.promtomatic.main --raw_input "Given a questions about human anatomy answer it in two words" \
+python -m src.promptomatix.main --raw_input "Given a questions about human anatomy answer it in two words" \
   --model_name "gpt-3.5-turbo" \
   --backend "simple_meta_prompt" \
   --synthetic_data_size 10 \
@@ -140,7 +140,7 @@ python -m src.promtomatic.main --raw_input "Given a questions about human anatom
 ### Python API Examples
 
 ```python
-from promtomatic import process_input, generate_feedback, optimize_with_feedback
+from promptomatix import process_input, generate_feedback, optimize_with_feedback
 
 # Basic optimization
 result = process_input(
@@ -249,7 +249,7 @@ src/
 │   │   └── main.jsx        # App entry point
 │   ├── package.json        # Frontend dependencies
 │   └── vite.config.js      # Vite configuration
-└── promtomatic/            # Core Python package
+└── promptomatix/            # Core Python package
 ```
 
 #### 🔍 Troubleshooting
