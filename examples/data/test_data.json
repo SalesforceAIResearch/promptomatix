@@ -1,0 +1,133 @@
+{
+  "classification_dataset": {
+    "description": "Sample dataset for text classification tasks",
+    "examples": [
+      {
+        "input": "This product is amazing! I love it so much.",
+        "output": "positive",
+        "task_type": "classification"
+      },
+      {
+        "input": "The customer service was terrible and unhelpful.",
+        "output": "negative",
+        "task_type": "classification"
+      },
+      {
+        "input": "The product works as expected, nothing special.",
+        "output": "neutral",
+        "task_type": "classification"
+      },
+      {
+        "input": "Absolutely fantastic experience with this company!",
+        "output": "positive",
+        "task_type": "classification"
+      },
+      {
+        "input": "I'm disappointed with the quality and service.",
+        "output": "negative",
+        "task_type": "classification"
+      }
+    ]
+  },
+  "summarization_dataset": {
+    "description": "Sample dataset for text summarization tasks",
+    "examples": [
+      {
+        "input": "The new artificial intelligence system developed by researchers at Stanford University has achieved remarkable results in natural language processing. The system, which uses advanced neural networks and deep learning techniques, can understand and generate human-like text with unprecedented accuracy. The research team spent three years developing this technology, which has applications in chatbots, content generation, and automated translation services. Early tests show the system outperforms existing solutions by 40% in accuracy and 60% in speed.",
+        "output": "Stanford researchers developed an AI system that achieves 40% better accuracy and 60% faster speed in natural language processing using advanced neural networks.",
+        "task_type": "summarization"
+      },
+      {
+        "input": "Climate change continues to be one of the most pressing global challenges of our time. Scientists have documented rising global temperatures, melting polar ice caps, and increasing extreme weather events. The Intergovernmental Panel on Climate Change (IPCC) has warned that immediate action is needed to reduce greenhouse gas emissions. Governments worldwide are implementing policies to transition to renewable energy sources and reduce carbon footprints. Individual actions, such as reducing energy consumption and supporting sustainable practices, also play a crucial role in addressing this crisis.",
+        "output": "Climate change requires immediate global action through government policies and individual efforts to reduce emissions and transition to renewable energy.",
+        "task_type": "summarization"
+      }
+    ]
+  },
+  "extraction_dataset": {
+    "description": "Sample dataset for information extraction tasks",
+    "examples": [
+      {
+        "input": "Customer: John Smith, Email: john.smith@email.com, Phone: (555) 123-4567, Order: #12345, Product: Wireless Headphones, Price: $99.99",
+        "output": {
+          "customer_name": "John Smith",
+          "email": "john.smith@email.com",
+          "phone": "(555) 123-4567",
+          "order_number": "#12345",
+          "product": "Wireless Headphones",
+          "price": "$99.99"
+        },
+        "task_type": "extraction"
+      },
+      {
+        "input": "Meeting scheduled for March 15, 2024 at 2:00 PM in Conference Room A. Attendees: Sarah Johnson, Mike Chen, Lisa Rodriguez. Agenda: Q1 Review, Budget Planning, New Product Launch.",
+        "output": {
+          "date": "March 15, 2024",
+          "time": "2:00 PM",
+          "location": "Conference Room A",
+          "attendees": ["Sarah Johnson", "Mike Chen", "Lisa Rodriguez"],
+          "agenda_items": ["Q1 Review", "Budget Planning", "New Product Launch"]
+        },
+        "task_type": "extraction"
+      }
+    ]
+  },
+  "generation_dataset": {
+    "description": "Sample dataset for text generation tasks",
+    "examples": [
+      {
+        "input": "Product: Smart Fitness Watch, Features: Heart rate monitor, GPS tracking, Sleep analysis, Price: $199",
+        "output": "Discover the ultimate fitness companion with our Smart Fitness Watch! Track your heart rate in real-time, navigate with built-in GPS, and gain insights into your sleep patterns. At just $199, this advanced wearable technology helps you achieve your health goals with precision and style.",
+        "task_type": "generation"
+      },
+      {
+        "input": "Company: TechCorp, Position: Software Engineer, Requirements: Python, JavaScript, 3+ years experience",
+        "output": "Join TechCorp as a Software Engineer and work on cutting-edge projects! We're looking for a talented developer with 3+ years of experience in Python and JavaScript. Be part of a dynamic team building innovative solutions that make a difference.",
+        "task_type": "generation"
+      }
+    ]
+  },
+  "qa_dataset": {
+    "description": "Sample dataset for question answering tasks",
+    "examples": [
+      {
+        "context": "The Python programming language was created by Guido van Rossum and released in 1991. It is known for its simplicity and readability, making it popular for beginners and experts alike. Python supports multiple programming paradigms including procedural, object-oriented, and functional programming.",
+        "question": "Who created Python and when was it released?",
+        "output": "Guido van Rossum created Python and it was released in 1991.",
+        "task_type": "qa"
+      },
+      {
+        "context": "Machine learning is a subset of artificial intelligence that enables computers to learn and improve from experience without being explicitly programmed. It uses algorithms to identify patterns in data and make predictions or decisions based on those patterns.",
+        "question": "What is machine learning and how does it work?",
+        "output": "Machine learning is a subset of AI that enables computers to learn from experience without explicit programming by using algorithms to identify data patterns and make predictions.",
+        "task_type": "qa"
+      }
+    ]
+  },
+  "translation_dataset": {
+    "description": "Sample dataset for translation tasks",
+    "examples": [
+      {
+        "input": "Hello, how are you today?",
+        "output": "Hola, ¿cómo estás hoy?",
+        "source_language": "English",
+        "target_language": "Spanish",
+        "task_type": "translation"
+      },
+      {
+        "input": "The weather is beautiful today.",
+        "output": "El clima está hermoso hoy.",
+        "source_language": "English",
+        "target_language": "Spanish",
+        "task_type": "translation"
+      }
+    ]
+  },
+  "metadata": {
+    "total_examples": 15,
+    "task_types": ["classification", "summarization", "extraction", "generation", "qa", "translation"],
+    "created_date": "2024-01-01",
+    "version": "1.0",
+    "description": "Comprehensive test dataset for Promptomatix examples and testing"
+  }
+} 

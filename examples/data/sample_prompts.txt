@@ -1,0 +1,100 @@
+# Advanced Prompts for Promptomatix Testing
+# Complex, ambiguous, and diverse prompts for robust evaluation
+
+# Multi-Modal Classification Tasks
+Analyze the sentiment of customer reviews while considering product category, user demographics, and review length to provide nuanced classification
+Categorize support tickets by urgency, complexity, and department while handling edge cases and conflicting information
+Classify academic papers by research methodology, field, and impact factor using abstract and citation data
+Determine the credibility of news articles by analyzing source reliability, content bias, and factual consistency
+Identify the primary and secondary emotions in social media posts with cultural context awareness
+
+# Context-Dependent Summarization Tasks
+Summarize technical documentation for different audience levels (beginner, intermediate, expert) while preserving critical information
+Create executive summaries of quarterly reports that highlight key metrics, risks, and strategic implications
+Extract actionable insights from customer feedback surveys while maintaining statistical significance
+Summarize research findings for both academic and general audiences with appropriate detail levels
+Condense legal documents into plain language summaries while preserving legal implications
+
+# Complex Information Extraction Tasks
+Extract structured data from unstructured medical records while handling missing information and conflicting entries
+Identify and categorize entities in technical documentation with domain-specific terminology
+Extract financial metrics from earnings reports while accounting for different reporting standards
+Parse requirements from software specifications with dependency mapping and constraint identification
+Extract timeline information from project documents with uncertainty handling and date normalization
+
+# Creative Generation with Constraints
+Generate marketing copy that appeals to multiple demographic segments while maintaining brand consistency
+Create technical documentation that balances completeness with readability across skill levels
+Write persuasive arguments that address counterarguments and ethical considerations
+Generate creative content that respects cultural sensitivities and avoids harmful stereotypes
+Design user interface text that accommodates accessibility requirements and internationalization
+
+# Ambiguous Question Answering Tasks
+Answer questions about controversial topics while presenting balanced perspectives and acknowledging uncertainty
+Provide explanations for complex technical concepts that adapt to the user's background knowledge
+Answer hypothetical scenarios with multiple valid interpretations and solution approaches
+Address questions about rapidly evolving fields where information may be outdated or conflicting
+Respond to questions requiring synthesis of information from multiple conflicting sources
+
+# Cross-Cultural Translation Tasks
+Translate content while preserving cultural context, humor, and idiomatic expressions
+Adapt technical documentation for different regional standards and regulatory requirements
+Convert formal business communication to appropriate levels of formality across cultures
+Translate user interface text while considering cultural norms and local preferences
+Adapt marketing materials for different cultural contexts while maintaining brand message
+
+# Advanced Analysis Tasks
+Analyze customer behavior patterns to identify emerging trends and predict future needs
+Evaluate the effectiveness of communication strategies across different channels and audiences
+Assess the quality and reliability of data sources for research purposes
+Compare competing solutions while considering multiple evaluation criteria and trade-offs
+Analyze the impact of policy changes on different stakeholder groups and time horizons
+
+# Creative Problem-Solving Tasks
+Design innovative solutions to complex business problems with multiple constraints
+Generate creative approaches to user experience challenges with accessibility considerations
+Develop strategies for managing organizational change with stakeholder alignment
+Create frameworks for evaluating competing priorities in resource-constrained environments
+Design systems for continuous improvement with feedback loops and adaptation mechanisms
+
+# Technical Implementation Tasks
+Debug complex code issues with limited error information and multiple potential causes
+Document API specifications that accommodate different use cases and integration patterns
+Create technical specifications that balance flexibility with implementation constraints
+Write user manuals that serve multiple user types with different technical backgrounds
+Generate comprehensive test cases that cover edge cases and error conditions
+
+# Strategic Business Tasks
+Develop business strategies that consider competitive dynamics and market uncertainties
+Create risk management frameworks that address both known and emerging threats
+Design performance measurement systems that balance multiple stakeholder objectives
+Develop change management plans that account for organizational resistance and cultural factors
+Create innovation roadmaps that balance short-term needs with long-term vision
+
+# Ethical and Compliance Tasks
+Review content for potential bias, discrimination, or harmful stereotypes
+Ensure compliance with data protection regulations while maintaining functionality
+Evaluate the ethical implications of AI system decisions and recommendations
+Assess the fairness and transparency of algorithmic decision-making processes
+Develop guidelines for responsible AI development and deployment
+
+# Crisis Management Tasks
+Analyze crisis communication strategies for effectiveness and stakeholder impact
+Evaluate emergency response protocols for completeness and adaptability
+Assess risk mitigation strategies for emerging threats and uncertainties
+Develop contingency plans for business continuity during disruptions
+Create communication frameworks for managing stakeholder expectations during crises
+
+# Innovation and Research Tasks
+Identify emerging technology trends and their potential business applications
+Evaluate research proposals for feasibility, impact, and resource requirements
+Assess the competitive landscape for new product development opportunities
+Analyze market gaps and unmet customer needs for innovation opportunities
+Develop frameworks for evaluating the success of innovation initiatives
+
+# Ambiguous Edge Cases
+Handle requests that contain contradictory information or unclear requirements
+Process inputs with multiple valid interpretations depending on context
+Address scenarios where standard approaches may not apply or could be harmful
+Evaluate situations where ethical considerations conflict with business objectives
+Manage cases where user intent is unclear or potentially problematic 
