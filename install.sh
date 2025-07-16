@@ -35,6 +35,10 @@ fi
 echo "⬆️  Upgrading pip..."
 python -m pip install --upgrade pip
 
+# Install all requirements from requirements.txt
+echo "📦 Installing requirements from requirements.txt..."
+pip install -r requirements.txt
+
 # Install DSPy from submodule first
 echo "📦 Installing DSPy from submodule..."
 if [ -d "libs/dspy" ]; then

@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/License-Apache-green.svg" alt="License">
 </div>
 
-https://github.com/airesearch-emu/promptomatix.git<p align="center">
+<p align="center">
   <a href="#-overview">Overview</a> |
   <a href="#-installation">Installation</a> |
   <a href="#-example-usage">Examples</a> |
@@ -24,6 +24,23 @@ https://github.com/airesearch-emu/promptomatix.git<p align="center">
 Promptomatix is an AI-driven framework designed to automate and optimize large language model (LLM) prompts. It provides a structured approach to prompt optimization, ensuring consistency, cost-effectiveness, and high-quality outputs while reducing the trial-and-error typically associated with manual prompt engineering.
 
 The framework leverages the power of DSPy and advanced optimization techniques to iteratively refine prompts based on task requirements, synthetic data, and user feedback. Whether you're a researcher exploring LLM capabilities or a developer building production applications, Promptomatix provides a comprehensive solution for prompt optimization.
+
+## 🏗️ Architecture
+
+<div align="center">
+  <a href="images/architecture1.pdf" target="_blank">
+    <img src="images/architecture1_quality.png" alt="Promptomatix Architecture" width="1200"/>
+  </a>
+</div>
+
+The Promptomatix architecture consists of several key components:
+
+- **Input Processing**: Analyzes raw user input to determine task type and requirements
+- **Synthetic Data Generation**: Creates training and testing datasets tailored to the specific task
+- **Optimization Engine**: Uses DSPy or meta-prompt backends to iteratively improve prompts
+- **Evaluation System**: Assesses prompt performance using task-specific metrics
+- **Feedback Integration**: Incorporates human feedback for continuous improvement
+- **Session Management**: Tracks optimization progress and maintains detailed logs
 
 ### 🌟 Key Features
 
@@ -53,7 +70,6 @@ The installer will:
 - ✅ Create a virtual environment (`promptomatix_env`)
 - ✅ Initialize git submodules (DSPy)
 - ✅ Install all dependencies
-- ✅ Set up the `promtomatic` command
 
 ### 🔧 Activate the Environment
 
@@ -82,7 +98,7 @@ cp .env.example .env
 
 ```bash
 # Test the installation
-python -m src.promtomatic.main --raw_input "Given a questions about human anatomy answer it in two words" --model_name "gpt-3.5-turbo" --backend "simple_meta_prompt" --synthetic_data_size 10 --model_provider "openai"
+python -m src.promptomatix.main --raw_input "Given a questions about human anatomy answer it in two words" --model_name "gpt-3.5-turbo" --backend "simple_meta_prompt" --synthetic_data_size 10 --model_provider "openai"
 ```
 
 ### 💡 Pro Tips
@@ -121,16 +137,15 @@ jupyter notebook 01_basic_usage.ipynb
 
 ```bash
 # Basic optimization
-python -m src.promtomatic.main --raw_input "Classify text sentiment into positive or negative"
+python -m src.promptomatix.main --raw_input "Classify text sentiment into positive or negative"
 
 # With custom model and parameters
-python -m src.promtomatic.main --raw_input "Summarize this article" \
+python -m src.promptomatix.main --raw_input "Summarize this article" \
   --model_name "gpt-4" \
   --temperature 0.3 \
   --task_type "summarization"
-
 # Advanced configuration
-python -m src.promtomatic.main --raw_input "Given a questions about human anatomy answer it in two words" \
+python -m src.promptomatix.main --raw_input "Given a questions about human anatomy answer it in two words" \
   --model_name "gpt-3.5-turbo" \
   --backend "simple_meta_prompt" \
   --synthetic_data_size 10 \
@@ -140,7 +155,7 @@ python -m src.promtomatic.main --raw_input "Given a questions about human anatom
 ### Python API Examples
 
 ```python
-from promtomatic import process_input, generate_feedback, optimize_with_feedback
+from promptomatix import process_input, generate_feedback, optimize_with_feedback
 
 # Basic optimization
 result = process_input(
@@ -160,162 +175,43 @@ feedback = generate_feedback(
 # Optimize with feedback
 improved_result = optimize_with_feedback(result['session_id'])
 ```
-
-### 🌐 Web Application
-
-Promptomatix includes a modern web interface for interactive prompt optimization. The web app provides a user-friendly way to optimize prompts with real-time feedback and session management.
-
-#### 🚀 Starting the Web App
-
-**Prerequisites**: Make sure you have activated the virtual environment and set up your API keys.
-
-```bash
-# Activate the environment (if not already activated)
-source promptomatix_env/bin/activate
-
-# Set your API keys
-export OPENAI_API_KEY="your_openai_api_key"
-export ANTHROPIC_API_KEY="your_anthropic_api_key"
-```
-
-**Start the Backend Server**:
-```bash
-# Navigate to the backend directory and start the Flask API server
-cd src/backend
-python api.py
-```
-
-The backend server will start on `http://localhost:5000`.
-
-**Start the Frontend Development Server**:
-```bash
-# In a new terminal, navigate to the frontend directory
-cd src/frontend
-
-# Install dependencies (first time only)
-npm install
-
-# Start the development server
-npm run dev
-```
-
-The frontend will be available at `http://localhost:5173` (or the next available port).
-
-#### 🎯 Using the Web Interface
-
-1. **Open your browser** and navigate to `http://localhost:5173`
-2. **Configure your settings** using the Config button in the top-right corner:
-   - Set your API keys
-   - Choose your preferred model (GPT-3.5, GPT-4, Claude, etc.)
-   - Configure optimization parameters
-3. **Enter your prompt** in the main input area
-4. **Click "Optimize"** to start the optimization process
-5. **Provide feedback** on the optimized prompt to improve it further
-6. **Download sessions** to save your work for later
-
-#### 🌟 Web App Features
-
-- **Real-time Optimization**: Watch as your prompts are optimized in real-time
-- **Interactive Feedback**: Click on any part of the prompt to provide specific feedback
-- **Session Management**: Save and load optimization sessions
-- **Configuration Panel**: Easy access to all optimization settings
-- **Progress Tracking**: Monitor optimization progress and metrics
-- **Export Options**: Download optimized prompts and session data
-
-#### 🛠️ Development Mode
-
-For developers who want to modify the web app:
-
-```bash
-# Backend development (with auto-reload)
-cd src/backend
-python api.py  # Flask runs in debug mode by default
-
-# Frontend development (with hot reload)
-cd src/frontend
-npm run dev    # Vite provides hot module replacement
-```
-
 #### 📁 Project Structure
 
 ```
-src/
-├── backend/
-│   └── api.py              # Flask API server
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── App.jsx         # Main app component
-│   │   └── main.jsx        # App entry point
-│   ├── package.json        # Frontend dependencies
-│   └── vite.config.js      # Vite configuration
-└── promtomatic/            # Core Python package
+promptomatix/
+├── images/                # Project images and logos
+├── libs/                  # External libraries or submodules (e.g., DSPy)
+├── logs/                  # Log files
+├── promptomatix_env/      # Python virtual environment
+├── sessions/              # Saved optimization sessions
+├── dist/                  # Distribution files (if any)
+├── build/                 # Build artifacts (if any)
+├── examples/              # Example notebooks and scripts
+├── src/
+│   └── promptomatix/      # Core Python package
+│       ├── cli/
+│       ├── core/
+│       ├── metrics/
+│       ├── utils/
+│       ├── __init__.py
+│       ├── main.py
+│       ├── lm_manager.py
+│       └── logger.py
+├── .env.example
+├── .gitignore
+├── .gitmodules
+├── .python-version
+├── CODEOWNERS
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENSE.txt
+├── README.md
+├── SECURITY.md
+├── how_to_license.md
+├── install.sh
+├── requirements.txt
+├── setup.py
 ```
-
-#### 🔍 Troubleshooting
-
-**Port Already in Use**:
-```bash
-# Check what's using the port
-lsof -i :5000  # For backend
-lsof -i :5173  # For frontend
-
-# Kill the process or use different ports
-```
-
-**API Key Issues**:
-```bash
-# Verify your API keys are set
-echo $OPENAI_API_KEY
-echo $ANTHROPIC_API_KEY
-
-# Or check the .env file
-cat .env
-```
-
-**Frontend Build Issues**:
-```bash
-# Clear node modules and reinstall
-cd src/frontend
-rm -rf node_modules package-lock.json
-npm install
-```
-
-## 🛣️ Supported Features
-
-### Task Types
-- **Classification**: Text categorization tasks
-- **Question Answering**: Extracting answers from contexts
-- **Generation**: Creative text generation
-- **Summarization**: Condensing longer texts
-- **Translation**: Converting between languages
-- **Reasoning**: Step-by-step problem solving
-
-### LLM Providers
-- OpenAI (GPT-3.5, GPT-4)
-- Anthropic (Claude)
-- Cohere
-- Custom providers via LM Manager
-
-### Optimization Techniques
-- DSPy-based optimization
-- MIPROv2 trainer
-- Task-specific metrics
-- Human feedback integration
-- Synthetic data generation
-
-## 🤝 Contributing
-
-[TODO]
-
-## 📄 License
-
-[TODO]
-
-## 📧 Contact
-
-[TODO]
-
 ---
 
 <p align="center">
