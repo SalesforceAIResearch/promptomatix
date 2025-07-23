@@ -8,6 +8,9 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Python-3.8%2B-brightgreen.svg" alt="Python 3.8+">
   <img src="https://img.shields.io/badge/License-Apache-green.svg" alt="License">
+  <a href="https://arxiv.org/abs/2507.14241" target="_blank">
+    <img src="https://img.shields.io/badge/arXiv-2507.14241-b31b1b.svg" alt="arXiv">
+  </a>
 </div>
 
 <p align="center">
@@ -213,6 +216,22 @@ promptomatix/
 ├── setup.py
 ```
 ---
+
+## 📖 Citation
+
+If you find Promptomatix useful in your research or work, please consider citing us:
+
+```bibtex
+@misc{murthy2025promptomatixautomaticpromptoptimization,
+      title={Promptomatix: An Automatic Prompt Optimization Framework for Large Language Models}, 
+      author={Rithesh Murthy and Ming Zhu and Liangwei Yang and Jielin Qiu and Juntao Tan and Shelby Heinecke and Caiming Xiong and Silvio Savarese and Huan Wang},
+      year={2025},
+      eprint={2507.14241},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2507.14241}, 
+}
+```
 
 <p align="center">
   <b>Promptomatix: Optimizing LLM prompts, so you don't have to.</b>

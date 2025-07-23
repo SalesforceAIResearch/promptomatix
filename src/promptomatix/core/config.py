@@ -1388,7 +1388,10 @@ class Config:
         Returns:
             Type[dspy.Module]: DSPy module class
         """
+        # testing `dspy.Predict`
+        # TODO: remove this
         return dspy.Predict
+    
         if self.dspy_module:
             return self.dspy_module
 
