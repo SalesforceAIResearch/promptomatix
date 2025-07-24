@@ -232,7 +232,12 @@ If you find Promptomatix useful in your research or work, please consider citing
       url={https://arxiv.org/abs/2507.14241}, 
 }
 ```
+---
 
-<p align="center">
-  <b>Promptomatix: Optimizing LLM prompts, so you don't have to.</b>
-</p>
+## 📬 Contact
+
+For questions, suggestions, or contributions, please contact:
+
+**Rithesh Murthy**  
+Email: [rithesh.murthy@salesforce.com](mailto:rithesh.murthy@salesforce.com)
+

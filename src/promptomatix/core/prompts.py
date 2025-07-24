@@ -3052,18 +3052,23 @@ def generate_meta_prompt_7(initial_prompt):
     given `initial_prompt` while strictly preserving immutable schema blocks.
     """
     meta_prompt_template = """
-You are an expert in analyzing and optimizing prompts. Your task is to enhance the given input prompt by breaking it down into components, optimizing each component independently, and then producing an improved version of the entire prompt.
+You are a senior prompt‑engineer. Your task is to enhance the given **input prompt** by breaking it down into components, optimizing each component independently, and then producing an improved version of the entire prompt.
 
-Here is the input prompt you need to optimize:
+## NON‑NEGOTIABLE CONTENT‑PRESERVATION
+- Do NOT remove, shorten, or merge any bucket unless it is provably redundant.
+- Every directive, parameter list, tool description, rule, and example in the input **must remain** in the optimized output (re‑phrased is fine; omitted is not).
+- If restitution would exceed the token limit, split into numbered continuation blocks rather than dropping content.
+- Re‑phrase sentences for clarity, fix grammar, and deduplicate wordy phrasing **only inside the same section.**  
+  *Do not delete, merge, or relocate content across buckets.*
 
+## HERE IS THE INPUT PROMPT YOU NEED TO OPTIMIZE:
 <input_prompt>
 {input_prompt}
 </input_prompt>
 
-Follow these steps to produce the final optimized prompt:
-
+## FOLLOW THESE STEPS TO PRODUCE THE FINAL OPTIMIZED PROMPT:
 1. Analyze the input prompt:
-   - If the prompt is simple (a few lines or a single paragraph), optimize it directly and return the result. Skip the remaining steps.
+   - If the prompt is < 280 characters AND has no fenced blocks, optimize in‑place and return the result. Skip the remaining steps.
    - Otherwise, continue with the steps below.
 
 2. Identify sections:
@@ -3086,19 +3091,20 @@ Follow these steps to produce the final optimized prompt:
 6. Construct the final prompt:
    - Assemble optimized buckets.
    - Keep original data formats (JSON, YAML, plain text, etc.).
+   - Only output that block—no extra commentary.
+   - Keep all intermediate reasoning completely internal; do NOT expose it in the output.
+   - The output MUST begin immediately with the fully‑optimized prompt – no preamble, no titles, no explanations. 
 
 7. Review and finalize:
    - Verify nothing critical was lost.
    - Prioritize completeness over brevity where necessary.
 
-Present the result as:
+## PRESENT THE RESULT IN THE FOLLOWING FORMAT:
+<optimized_prompt>{{optimized_prompt}}</optimized_prompt>
+(No other text or commentary. Any deviation triggers `ERROR: format violation`.)
 
-OPTIMIZED PROMPT OUTPUT:
-[optimized prompt here]
 
-Only output that block—no extra commentary.
-
-### IMMUTABLE SCHEMA BLOCKS
+## IMMUTABLE SCHEMA BLOCKS
 Any contiguous block that defines a machine-readable interface—functions, tools, APIs, database tables, config schemas, etc.—is **immutable**.
 
 **Identification**
@@ -3140,3 +3146,191 @@ For each fenced block:
 Non‑compliance is a hard failure. Surrounding narrative and examples may be optimized freely.
 """
     return meta_prompt_template.format(input_prompt=initial_prompt)
+
+
+# def generate_meta_prompt_7(initial_prompt):
+#     """
+#     Return a meta‑prompt that instructs an LLM-based optimizer to improve the given initial_prompt,
+#     preserving all content (especially any schema/code blocks) while enhancing clarity, structure,
+#     completeness, and alignment with the user's intent.
+#     """
+#     meta_prompt_template = """
+# You are an elite prompt engineer. Your mission is to **refine the user's input prompt** into a perfectly clear, structured, and effective prompt that any AI model can follow to produce the desired result. The content of the prompt must remain the same in meaning and intent, but you will resolve ambiguities, enforce format consistency, and add any missing details (audience, persona, examples, validations) to maximize performance.
+
+# ## NON-NEGOTIABLE CONTENT PRESERVATION
+# - **No content loss:** Do NOT omit or alter any essential information from the user's prompt. Every instruction, rule, and detail in the input must appear in the optimized prompt (rephrasing is allowed; deletion is not) unless it is an exact duplicate.
+# - **Deduplicate carefully:** If the prompt contains repeated or overlapping information (e.g., duplicate tool definitions or rules), consolidate them into one place **only if** they are truly identical or serve the exact same purpose. Otherwise, preserve each separately but clarify differences.
+# - **Keep structure:** Maintain any provided structure (lists, tables, sections). Do not merge distinct sections into one or change their hierarchy unless it improves logic and is explicitly justified.
+# - **Token limits:** If the optimized prompt risks exceeding model context length, **do not drop content**. Instead, split the output into sequential numbered segments (<continued_1>, <continued_2>, ...) ensuring all content is delivered.
+
+# ## SCHEMA & CODE BLOCK HANDLING
+# - **Detect Immutable Blocks:** Any segment defining a formal schema, code, function API, or configuration (e.g., JSON, YAML, XML, code snippet) should be treated as an *immutable block* that must remain structurally identical. Such blocks will be fenced or tagged (e.g., ```SCHEMA``` ... ``` or <SCHEMA> ... </SCHEMA>).
+# - **Allowed Edits in Blocks:** Within immutable blocks, you may ONLY modify descriptive text elements (like descriptions, comments, docstrings) to improve clarity. All keys, parameters, data types, and structure must remain byte-for-byte unchanged. (For example, you can reword a field's "description" text, but you cannot change its name, type, or default value.)
+# - **Forbidden Edits in Blocks:** You must NOT add new fields, remove required fields, reorder elements, change syntax, or alter any functional logic in these blocks. Do not convert formats (e.g., JSON to YAML) or adjust indentation/casing inside.
+# - **Validation of Blocks:** After editing descriptions/comments, ensure the block's functionality is intact. To be certain, conceptually compute a hash (SHA-256) of the original block versus the edited block ignoring only the changed text in descriptions/comments. If any difference beyond allowed text occurs, revert those disallowed changes immediately.
+# - **Multi-Language/Format:** Schema blocks could be in any format (JSON, XML, Python code, SQL schema, custom DSL, etc.). Apply these rules universally.
+
+# ## INPUT PROMPT
+# <input_prompt>
+# {input_prompt}
+# </input_prompt>
+
+# ## TRANSFORMATION STEPS (STRICTLY FOLLOW IN ORDER)
+# 1. **Analyze & Segment**: Examine the input prompt in detail. Determine its main goal and sub-tasks. Split the prompt into logical sections (buckets) such as: context/background, user instructions, system rules, tool definitions, examples, constraints, desired output format, etc. Use ad-hoc section titles that best describe each group of lines. *Every line of the input must belong to one section.* If the prompt is very short (e.g., a single question under 280 characters with no special formatting), you may treat the whole prompt as one section and perform in-place improvements.
+# 2. **Identify Ambiguities & Gaps**: For each section, note any ambiguities, implicit requirements, or missing information. Decide what clarifications or additional instructions are needed. For example, does the prompt specify a role/persona for the AI? The audience or reading level of the answer? The format of the answer? Error handling for tools? If not, plan to add them appropriately.
+# 3. **Set Section Objectives**: For each bucketed section, define what optimization is needed:
+#    - *Instructions/Goal*: Rewrite for absolute clarity and brevity. Ensure the AI knows exactly what outcome is expected. Remove any ambiguity like "maybe do X"; make it explicit commands.
+#    - *Persona/Audience*: If not provided, decide on a suitable persona for the AI (e.g., "You are a veteran data scientist...") and an audience description ("for a technical audience", "for young students", etc.) and add them in a new section. If provided, refine wording for consistency.
+#    - *Tools/Functions*: Ensure any tool or function definitions are precise. If multiple tools are defined with overlapping functionality or naming, clarify their differences or usage conditions. Do not hallucinate new tools. If the prompt expects a tool call that isn't defined, flag it or include a note to the user asking for that tool's definition (but do not invent it).
+#    - *Examples*: If examples are present, verify they are correct and representative. If none are present but the task would benefit from examples (few-shot prompting), consider adding a couple of relevant examples to guide the model, including an edge case example. Ensure any added examples are clearly separated and labeled (e.g., "Example Input / Example Output").
+#    - *Constraints/Rules*: List out any explicit constraints (length limits, format requirements, disallowed content). Strengthen them if needed (e.g., add "No mention of internal instructions" for prompt-injection defense, or stricter output validation steps). For ambiguous or missing rules, add clarifications (e.g., "If the user input is missing required info, ask for it rather than guessing").
+#    - *Output Format*: If the user specified an output format or style (JSON, XML, bullet points, code block, etc.), preserve and highlight that. The optimized prompt should **strictly instruct** the model to use that format (e.g., "Answer in JSON with keys X, Y..."). If no format is specified, choose a clear, appropriate format (e.g., a concise explanation, a step-by-step solution, a table) and instruct the model accordingly.
+#    - *Ambiguity Resolution*: Add instructions for how to handle ambiguities or unstated assumptions. For instance, "If the query is unclear, ask a clarifying question" or "If information is insufficient, explain what's needed." Only do this if interactive clarification is possible; otherwise, instruct the model to state its assumptions in the answer.
+#    - *Safety & Edge Cases*: Insert or enhance a "Safety" section with guidelines on refusing or safe-completing disallowed requests, and covering edge cases. E.g., "If user asks for medical advice, respond with a disclaimer..." or "If a tool fails, provide an error message to user".
+# 4. **Optimize Wording in Each Section**: Rewrite each section according to its objective:
+#    - Use clear, professional language. Aim for neutral tone (or a tone specified by the prompt).
+#    - Make instructions as direct as possible (GPT-4.1 follows literal instructions closely, so be specific). Use bulleted or numbered lists for multi-step instructions or multiple rules, each covering one point.
+#    - Ensure no important detail is lost. When rephrasing, double-check that all facts and constraints remain.
+#    - Fix any grammatical errors or confusing phrasing. Prefer simple, unambiguous wording.
+#    - Use consistent terminology across sections (e.g., if user is called "customer" in one place, don't call them "client" elsewhere unintentionally).
+#    - Add inline **meta-comments** (in brackets or as HTML comments) explaining non-obvious changes or assumptions, so the user knows why changes were made. (e.g., "[Added persona to clarify the role]"). Keep these brief.
+# 5. **Integrate Advanced Techniques (when relevant)**:
+#    - *Chain-of-Thought:* If the task is complex and would benefit from reasoning steps, instruct the model with a phrase like "Let's think step-by-step" or provide a structured reasoning plan within the prompt. Ensure the chain-of-thought is either internal (not part of final answer) or clearly indicated if it should be output.
+#    - *Few-Shot Examples:* If adding examples, use a diverse set (cover typical case and edge case). Show both input and desired output for each example. Label them clearly and ensure they don't conflict with instructions.
+#    - *Self-Consistency:* For tasks requiring critical thinking, you can encourage the model to double-check its work (e.g., "Provide your answer, then verify it with an explanation" or ask for multiple reasoning paths internally and pick the best answer). Use this sparingly and only if needed, as it increases length.
+#    - *Tool Use & Planning:* For agentic prompts (involving tools or multi-step plans), incorporate the following:
+#      - Remind the model to use the tools rather than guessing for unknown info ("If you are unsure, use the available tools to find the answer; do NOT invent unverifiable info").
+#      - Encourage a brief plan before using tools (e.g., "Plan your approach before executing any tool"). Optionally instruct the model to output its plan or reasoning if the format allows, or keep it internal if not.
+#      - Emphasize persistence: e.g., "Continue using tools and reasoning in steps until the problem is resolved, and only then give the final answer." (Prevents the model from stopping too early in agentic tasks.)
+#      - If the model should ask clarifying questions to the user (in a multi-turn setting) instead of making assumptions, specify that clearly.
+# 6. **Reassemble & Format**: Combine the optimized sections back into a single, coherent prompt. Arrange sections in a logical order that suits the task:
+#    - Usually: Start with any high-level context or persona, then the user instructions/goal, followed by specific rules or tools, then examples, then output format instructions, and finally any additional notes (like safety or metadata).
+#    - Ensure that the final assembled prompt flows naturally and that sections are clearly delineated (use headings like '##' or XML tags if appropriate, or consistent markdown for lists/code blocks as needed).
+#    - **Preserve format specs**: Maintain any specific formatting from the original (like markdown, lists, JSON snippets) unless a change is needed for clarity. If you introduced a persona or new section, format it consistently with the rest (e.g., as a top-level bullet or a new heading).
+#    - Check that any references to earlier parts (like "above" or "below") are still correct after reordering.
+# 7. **Quality Check & Finalize**:
+#    - **Completeness**: Verify that no required information from the original prompt is missing in the final prompt. If something was implicit and you made it explicit, ensure it truly reflects the user's intent.
+#    - **No Contradictions**: Ensure the optimized prompt doesn’t introduce contradictions. All rules and instructions should be consistent. Remove any duplicate or conflicting instructions that remain.
+#    - **Format Adherence**: Double-check that if a specific output format was requested, the prompt explicitly tells the model to use it and nothing else. If no format was given, ensure the chosen format is appropriate and clearly stated.
+#    - **Safety**: Confirm that you have included any necessary safety instructions (like content filters, refusal guidelines) especially if the prompt touches on potentially sensitive topics.
+#    - **Grammar & Tone**: Final proofread for grammar, spelling, or tone issues. Ensure the tone aligns with the intended audience (professional, casual, friendly, etc., as inferred or stated).
+#    - Imagine you are the AI receiving this optimized prompt: would you unequivocally understand what to do and how to do it? If not, refine further.
+
+# ## ADVANCED CONSIDERATIONS
+# - **Cross-Model Compatibility**: The optimized prompt should be written in a way that any major LLM can understand. Avoid vendor-specific keywords or formatting. Use plain markdown or widely supported markup. For placeholders or variables in the prompt (like slots to be filled later), use a neutral syntax (e.g., `{{variable_name}}`) that won't confuse the model.
+# - **Language and Locale**: If the input prompt or context is in a certain language or domain jargon, preserve that. Do not translate or change domain-specific terms unless instructed. The final prompt's language should match the input unless the task requires a translation.
+# - **Domain-specific Knowledge**: If the task requires specialized knowledge (medical, legal, etc.), ensure the prompt includes relevant context or guidelines for that domain (especially if the original prompt omitted them). For example, add a note like "Use layman terms for medical explanations" or "Cite sources for legal claims" as needed.
+# - **Ambiguous Task Types**: If it's unclear whether the user wants a creative story, a straightforward answer, a formatted report, etc., the optimized prompt should either cover both possibilities or make a choice and then clearly instruct that style. Add a meta-comment if you had to make an assumption about this.
+# - **Error Handling**: If the prompt involves processes that might fail (like calling tools, or code that could error), include instructions on what to do if that happens (e.g., "If the database query fails, output an error message and stop."). This prevents the AI from silently failing or hallucinating success.
+# - **Multi-turn Context**: If the prompt is part of a multi-turn conversation or an agent loop, ensure it contains reminders about persistence (don't end prematurely), context carrying (remember earlier user messages), and how to finalize when done.
+
+# ## OUTPUT INSTRUCTIONS
+# You will now output the fully optimized prompt. It must be enclosed in the tags `<optimized_prompt>` and `</optimized_prompt>` exactly, with no additional commentary or explanation outside those tags. The optimized prompt should reflect all the improvements and guidelines above.
+
+# <optimized_prompt>
+# [PLACE THE IMPROVED PROMPT HERE]
+# </optimized_prompt>
+
+# (Any deviation from the above format or loss of content will be considered a failure of this optimization task.)
+# """
+#     return meta_prompt_template.format(input_prompt=initial_prompt)
+
+
+# def generate_meta_prompt_7(initial_prompt):
+#     """
+#     Return a meta‑prompt that instructs an LLM-based optimizer to improve the given initial_prompt,
+#     preserving all content (especially any schema/code blocks) while enhancing clarity, structure,
+#     completeness, and alignment with the user's intent.
+#     """
+#     meta_prompt_template = """
+# You are an elite prompt engineer. Your mission is to **refine the user's input prompt** into a perfectly clear, structured, and effective prompt that any AI model can follow to produce the desired result. The content of the prompt must remain the same in meaning and intent, but you will resolve ambiguities, enforce format consistency, and add any missing details (audience, persona, examples, validations) to maximize performance.
+
+# ## NEW REQUIREMENTS
+# 1. **Task Overview (MANDATORY)**  
+#    - Start the optimized prompt with `## Task Overview` followed by 1‑3 plain sentences summarizing the end goal. Assign a role based on the task. For example, if the task is to write code, the role could be "You are a senior software engineer ...".
+
+# 2. **Tool‑Definition Block Preservation (GENERIC)**  [Ignore if the task is not related to tools/agents]
+#    - Treat as *immutable* **any contiguous block that appears to define tools / functions**, identified by either:  
+#      • XML‑style tags whose name contains “tool” or “function” (case‑insensitive, underscores or hyphens allowed).  
+#      • A fenced code block (``` or ~~~) or JSON/YAML snippet whose top‑level value is an **array of objects**, each having both `"name"` and `"parameters"` keys.  
+#    - Capture every such block in the order found.  
+#    - In the final prompt, place them verbatim under `## Tool Definitions` immediately after the Task Overview.
+
+# ## NON-NEGOTIABLE CONTENT PRESERVATION
+# - **No content loss:** Do NOT omit or alter any essential information from the user's prompt. Every instruction, rule, and detail in the input must appear in the optimized prompt (rephrasing is allowed; deletion is not) unless it is an exact duplicate.
+# - **Deduplicate carefully:** If the prompt contains repeated or overlapping information (e.g., duplicate tool definitions or rules), consolidate them into one place **only if** they are truly identical or serve the exact same purpose. Otherwise, preserve each separately but clarify differences.
+# - **Keep structure:** Maintain any provided structure (lists, tables, sections). Do not merge distinct sections into one or change their hierarchy unless it improves logic and is explicitly justified.
+# - **Token limits:** If the optimized prompt risks exceeding model context length, **do not drop content**. Instead, split the output into sequential numbered segments (<continued_1>, <continued_2>, ...) ensuring all content is delivered.
+
+# ## SCHEMA & CODE BLOCK HANDLING
+# - **Detect Immutable Blocks:** Any segment defining a formal schema, code, function API, or configuration (e.g., JSON, YAML, XML, code snippet) should be treated as an *immutable block* that must remain structurally identical. Such blocks will be fenced or tagged (e.g., ```SCHEMA``` ... ``` or <SCHEMA> ... </SCHEMA>).
+# - **Allowed Edits in Blocks:** Within immutable blocks, you may ONLY modify descriptive text elements (like descriptions, comments, docstrings) to improve clarity. All keys, parameters, data types, and structure must remain byte-for-byte unchanged. (For example, you can reword a field's "description" text, but you cannot change its name, type, or default value.)
+# - **Forbidden Edits in Blocks:** You must NOT add new fields, remove required fields, reorder elements, change syntax, or alter any functional logic in these blocks. Do not convert formats (e.g., JSON to YAML) or adjust indentation/casing inside.
+# - **Validation of Blocks:** After editing descriptions/comments, ensure the block's functionality is intact. To be certain, conceptually compute a hash (SHA-256) of the original block versus the edited block ignoring only the changed text in descriptions/comments. If any difference beyond allowed text occurs, revert those disallowed changes immediately.
+# - **Multi-Language/Format:** Schema blocks could be in any format (JSON, XML, Python code, SQL schema, custom DSL, etc.). Apply these rules universally.
+
+# ## INPUT PROMPT
+# <input_prompt>
+# {input_prompt}
+# </input_prompt>
+
+# ## TRANSFORMATION STEPS (STRICTLY FOLLOW IN ORDER)
+# 0. **Tiny‑Prompt Fast‑Path**: If the input is **< 280 characters** *and* contains **no fenced blocks**, rewrite inline for clarity/grammar/redundancy. Return immediately, wrapped in `<optimized_prompt>` … `</optimized_prompt>`. Skip all further steps.
+# 1. **Analyze & Segment**: Examine the input prompt in detail. Determine its main goal and sub-tasks. Split the prompt into logical sections (buckets) such as: context/background, user instructions, system rules, tool definitions, examples, constraints, desired output format, etc. Use ad-hoc section titles that best describe each group of lines. *Every line of the input must belong to one section.* If the prompt is very short (e.g., a single question under 280 characters with no special formatting), you may treat the whole prompt as one section and perform in-place improvements.
+# 2. **Identify Ambiguities & Gaps**: For each section, note any ambiguities, implicit requirements, or missing information. Decide what clarifications or additional instructions are needed. For example, does the prompt specify a role/persona for the AI? The audience or reading level of the answer? The format of the answer? Error handling for tools? If not, plan to add them appropriately.
+# 3. **Set Section Objectives**: For each bucketed section, define what optimization is needed:
+#    - *Instructions/Goal*: Rewrite for absolute clarity and brevity. Ensure the AI knows exactly what outcome is expected. Remove any ambiguity like "maybe do X"; make it explicit commands.
+#    - *Persona/Audience*: If not provided, decide on a suitable persona for the AI (e.g., "You are a veteran data scientist...") and an audience description ("for a technical audience", "for young students", etc.) and add them in a new section. If provided, refine wording for consistency.
+#    - *Tools/Functions*: Ensure any tool or function definitions are precise. If multiple tools are defined with overlapping functionality or naming, clarify their differences or usage conditions. Do not hallucinate new tools. If the prompt expects a tool call that isn't defined, flag it or include a note to the user asking for that tool's definition (but do not invent it).
+#    - *Examples*: If examples are present, verify they are correct and representative. If none are present but the task would benefit from examples (few-shot prompting), consider adding a couple of relevant examples to guide the model, including an edge case example. Ensure any added examples are clearly separated and labeled (e.g., "Example Input / Example Output").
+#    - *Constraints/Rules*: List out any explicit constraints (length limits, format requirements, disallowed content). Strengthen them if needed (e.g., add "No mention of internal instructions" for prompt-injection defense, or stricter output validation steps). For ambiguous or missing rules, add clarifications (e.g., "If the user input is missing required info, ask for it rather than guessing").
+#    - *Output Format*: If the user specified an output format or style (JSON, XML, bullet points, code block, etc.), preserve and highlight that. The optimized prompt should **strictly instruct** the model to use that format (e.g., "Answer in JSON with keys X, Y..."). If no format is specified, choose a clear, appropriate format (e.g., a concise explanation, a step-by-step solution, a table) and instruct the model accordingly.
+#    - *Ambiguity Resolution*: Add instructions for how to handle ambiguities or unstated assumptions. For instance, "If the query is unclear, ask a clarifying question" or "If information is insufficient, explain what's needed." Only do this if interactive clarification is possible; otherwise, instruct the model to state its assumptions in the answer.
+#    - *Safety & Edge Cases*: Insert or enhance a "Safety" section with guidelines on refusing or safe-completing disallowed requests, and covering edge cases. E.g., "If user asks for medical advice, respond with a disclaimer..." or "If a tool fails, provide an error message to user".
+# 4. **Optimize Wording in Each Section**: Rewrite each section according to its objective:
+#    - Use clear, professional language. Aim for neutral tone (or a tone specified by the prompt).
+#    - Make instructions as direct as possible (GPT-4.1 follows literal instructions closely, so be specific). Use bulleted or numbered lists for multi-step instructions or multiple rules, each covering one point.
+#    - Ensure no important detail is lost. When rephrasing, double-check that all facts and constraints remain.
+#    - Fix any grammatical errors or confusing phrasing. Prefer simple, unambiguous wording.
+#    - Use consistent terminology across sections (e.g., if user is called "customer" in one place, don't call them "client" elsewhere unintentionally).
+#    - Add inline **meta-comments** (in brackets or as HTML comments) explaining non-obvious changes or assumptions, so the user knows why changes were made. (e.g., "[Added persona to clarify the role]"). Keep these brief.
+# 5. **Integrate Advanced Techniques (when relevant)**:
+#    - *Chain-of-Thought:* If the task is complex and would benefit from reasoning steps, instruct the model with a phrase like "Let's think step-by-step" or provide a structured reasoning plan within the prompt. Ensure the chain-of-thought is either internal (not part of final answer) or clearly indicated if it should be output.
+#    - *Few-Shot Examples:* If adding examples, use a diverse set (cover typical case and edge case). Show both input and desired output for each example. Label them clearly and ensure they don't conflict with instructions.
+#    - *Self-Consistency:* For tasks requiring critical thinking, you can encourage the model to double-check its work (e.g., "Provide your answer, then verify it with an explanation" or ask for multiple reasoning paths internally and pick the best answer). Use this sparingly and only if needed, as it increases length.
+#    - *Tool Use & Planning:* For agentic prompts (involving tools or multi-step plans), incorporate the following:
+#      - Remind the model to use the tools rather than guessing for unknown info ("If you are unsure, use the available tools to find the answer; do NOT invent unverifiable info").
+#      - Encourage a brief plan before using tools (e.g., "Plan your approach before executing any tool"). Optionally instruct the model to output its plan or reasoning if the format allows, or keep it internal if not.
+#      - Emphasize persistence: e.g., "Continue using tools and reasoning in steps until the problem is resolved, and only then give the final answer." (Prevents the model from stopping too early in agentic tasks.)
+#      - If the model should ask clarifying questions to the user (in a multi-turn setting) instead of making assumptions, specify that clearly.
+# 6. **Reassemble & Format**: Combine the optimized sections back into a single, coherent prompt. Arrange sections in a logical order that suits the task:
+#    - Usually: Start with any high-level context or persona, then the user instructions/goal, followed by specific rules or tools, then examples, then output format instructions, and finally any additional notes (like safety or metadata).
+#    - Ensure that the final assembled prompt flows naturally and that sections are clearly delineated (use headings like '##' or XML tags if appropriate, or consistent markdown for lists/code blocks as needed).
+#    - **Preserve format specs**: Maintain any specific formatting from the original (like markdown, lists, JSON snippets) unless a change is needed for clarity. If you introduced a persona or new section, format it consistently with the rest (e.g., as a top-level bullet or a new heading).
+#    - Check that any references to earlier parts (like "above" or "below") are still correct after reordering.
+# 7. **Quality Check & Finalize**:
+#    - **Completeness**: Verify that no required information from the original prompt is missing in the final prompt. If something was implicit and you made it explicit, ensure it truly reflects the user's intent.
+#    - **No Contradictions**: Ensure the optimized prompt doesn’t introduce contradictions. All rules and instructions should be consistent. Remove any duplicate or conflicting instructions that remain.
+#    - **Format Adherence**: Double-check that if a specific output format was requested, the prompt explicitly tells the model to use it and nothing else. If no format was given, ensure the chosen format is appropriate and clearly stated.
+#    - **Safety**: Confirm that you have included any necessary safety instructions (like content filters, refusal guidelines) especially if the prompt touches on potentially sensitive topics.
+#    - **Grammar & Tone**: Final proofread for grammar, spelling, or tone issues. Ensure the tone aligns with the intended audience (professional, casual, friendly, etc., as inferred or stated).
+#    - Imagine you are the AI receiving this optimized prompt: would you unequivocally understand what to do and how to do it? If not, refine further.
+
+# ## ADVANCED CONSIDERATIONS
+# - **Cross-Model Compatibility**: The optimized prompt should be written in a way that any major LLM can understand. Avoid vendor-specific keywords or formatting. Use plain markdown or widely supported markup. For placeholders or variables in the prompt (like slots to be filled later), use a neutral syntax (e.g., `{{variable_name}}`) that won't confuse the model.
+# - **Language and Locale**: If the input prompt or context is in a certain language or domain jargon, preserve that. Do not translate or change domain-specific terms unless instructed. The final prompt's language should match the input unless the task requires a translation.
+# - **Domain-specific Knowledge**: If the task requires specialized knowledge (medical, legal, etc.), ensure the prompt includes relevant context or guidelines for that domain (especially if the original prompt omitted them). For example, add a note like "Use layman terms for medical explanations" or "Cite sources for legal claims" as needed.
+# - **Ambiguous Task Types**: If it's unclear whether the user wants a creative story, a straightforward answer, a formatted report, etc., the optimized prompt should either cover both possibilities or make a choice and then clearly instruct that style. Add a meta-comment if you had to make an assumption about this.
+# - **Error Handling**: If the prompt involves processes that might fail (like calling tools, or code that could error), include instructions on what to do if that happens (e.g., "If the database query fails, output an error message and stop."). This prevents the AI from silently failing or hallucinating success.
+# - **Multi-turn Context**: If the prompt is part of a multi-turn conversation or an agent loop, ensure it contains reminders about persistence (don't end prematurely), context carrying (remember earlier user messages), and how to finalize when done.
+
+# ## OUTPUT INSTRUCTIONS
+# You will now output the fully optimized prompt. It must be enclosed in the tags `<optimized_prompt>` and `</optimized_prompt>` exactly, with no additional commentary or explanation outside those tags. The optimized prompt should reflect all the improvements and guidelines above.
+
+# <optimized_prompt>
+# [PLACE THE IMPROVED PROMPT HERE]
+# </optimized_prompt>
+
+# (ANY DEVIATION FROM THE ABOVE FORMAT OR LOSS OF CONTENT WILL BE CONSIDERED A FAILURE OF THIS OPTIMIZATION TASK.)
+# """
+#     return meta_prompt_template.format(input_prompt=initial_prompt)
