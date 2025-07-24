@@ -234,6 +234,12 @@ If you find Promptomatix useful in your research or work, please consider citing
 ```
 ---
 
+## 📚 Further Reading
+
+For detailed guidelines on effective prompt engineering, please refer to **Appendix B (page 17)** of our paper:
+
+- [Promptomatix: An Automatic Prompt Optimization Framework for Large Language Models](https://arxiv.org/abs/2507.14241)
+
 ## 📬 Contact
 
 For questions, suggestions, or contributions, please contact:
