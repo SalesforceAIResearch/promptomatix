@@ -193,7 +193,7 @@ def log_llm_interaction(prompt: str, response: str, context: str = None):
 
 
 class Config:
-    """Configuration class for DSPy task initialization and execution.
+    """Configuration class for prompt optimization.
     
     This class manages configuration parameters for natural language processing tasks,
     automatically inferring missing parameters and validating the configuration. It supports
@@ -201,7 +201,7 @@ class Config:
     
     Attributes:
         # Input Source Parameters
-        raw_input (Optional[str]): Raw input text for task initialization
+        raw_input (str): Raw input text for task initialization
         huggingface_dataset_name (Optional[str]): Name of HuggingFace dataset (e.g., 'squad_v2')
         original_raw_input (Optional[str]): Preserved copy of initial human input
         session_id (Optional[str]): Unique identifier for the optimization session
@@ -1335,7 +1335,7 @@ class Config:
         if self.tools is not None:
             return self.tools
 
-        prompt = extract_tools_from_raw_input(self.raw_input_improvised)
+        prompt = extract_tools_from_raw_input(self.raw_input)
         response = tmp_lm(prompt)[0]
         
         # Log LLM interaction
@@ -1702,4 +1702,5 @@ class Config:
             f"Valid: {len(self.valid_data) if self.valid_data else 0}, "
             f"Valid Full: {len(self.valid_data_full) if self.valid_data_full else 0}"
         )
+
 
