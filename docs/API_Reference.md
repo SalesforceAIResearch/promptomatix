@@ -5,6 +5,50 @@ This section documents the main classes and functions in Promptomatix.
 ---
 ## config.py
 
+
+**Configuration Flow**
+
+The configuration process in the `Config` class is designed to be robust, automatic, and transparent. Here is a step-by-step overview of how configuration is populated and validated:
+
+1. **Set Search Type Configuration**
+   - The process begins by determining the search/optimization strategy (e.g., 'quick_search', 'moderate_search', 'heavy_search') using the internal `_set_search_type_config()` method. This sets up the overall approach for prompt optimization.
+
+2. **Preserve Original Human Input**
+   - If `original_raw_input` is not already set, it is initialized with the value of `raw_input`. This ensures the original user input is always available for reference, even if it is later modified or improved.
+
+3. **Initialize the Language Model for Configuration**
+   - The internal `_setup_model_config()` method is called to initialize the "teacher" (config) model. This model is typically more powerful and is used for all configuration, guidance, and synthetic data generation steps.
+
+4. **Process Human Input and Feedback**
+   - The human input is processed and improved (if necessary) using `_process_human_feedback()`. This may involve LLM calls to clarify, clean, or enhance the input, ensuring the system works with the best possible prompt.
+
+5. **Develop Prompt Template Components**
+   - The `_develop_prompt_template_components()` function extracts and constructs all necessary prompt components (such as templates, style guides, and constraints) from the processed input, ensuring the prompt is well-structured for optimization.
+
+6. **Extract Task-Specific Configurations**
+   - The following internal methods are called in order to extract all required task details:
+     - `_extract_task_description()`: Determines the detailed task description, either from the dataset or the improved input.
+     - `_extract_sample_data()`: Gathers or generates example input-output pairs (seed samples) for the task.
+     - `_extract_task_type()`: Infers the type of NLP task (e.g., classification, QA, generation).
+     - `_extract_fields()`: Identifies the required input and output fields for the task.
+     - `_extract_tools()`: Extracts any external tools or resources needed for the task (if relevant).
+
+7. **Set Training and Optimization Parameters**
+   - The training algorithm is selected using `_set_trainer()`, and the DSPy module is chosen with `_set_dspy_module()`. These determine how the optimization and training will be performed.
+   - Default values for `synthetic_data_size` (number of synthetic examples) and `train_ratio` (fraction of data for training) are set if not provided.
+
+8. **Calculate Dataset Sizes**
+   - The `_calculate_dataset_sizes()` method is called to determine the sizes of the training and validation datasets, ensuring proper data splits for training and evaluation.
+
+9. **Track LLM Usage and Cost**
+   - After all LLM calls and configuration steps, the total cost of LLM usage is calculated and stored in `llm_cost` for transparency and monitoring.
+
+10. **Cleanup**
+    - Temporary objects (such as the config model instance) are deleted to free up resources, and a final log message confirms successful configuration.
+
+Throughout this process, all LLM interactions are logged, configuration values are validated as they are set, and default values are used when appropriate. The order of operations is carefully designed so that later steps can depend on the results of earlier ones (e.g., tools extraction depends on task type). If any required information is missing or inconsistent, a `ValueError` is raised to alert the user.
+
+
 ### Class: Config
 
 ```
@@ -59,49 +103,6 @@ Configuration class for prompt optimization and evaluation workflows. This class
 - `load_data_local` (bool, optional): If True, load data from local files. Default is False.
 - `local_train_data_path` (str, optional): Path to local training data file.
 - `local_test_data_path` (str, optional): Path to local test data file.
-
-
-**Configuration Flow**
-
-The configuration process in the `Config` class is designed to be robust, automatic, and transparent. Here is a step-by-step overview of how configuration is populated and validated:
-
-1. **Set Search Type Configuration**
-   - The process begins by determining the search/optimization strategy (e.g., 'quick_search', 'moderate_search', 'heavy_search') using the internal `_set_search_type_config()` method. This sets up the overall approach for prompt optimization.
-
-2. **Preserve Original Human Input**
-   - If `original_raw_input` is not already set, it is initialized with the value of `raw_input`. This ensures the original user input is always available for reference, even if it is later modified or improved.
-
-3. **Initialize the Language Model for Configuration**
-   - The internal `_setup_model_config()` method is called to initialize the "teacher" (config) model. This model is typically more powerful and is used for all configuration, guidance, and synthetic data generation steps.
-
-4. **Process Human Input and Feedback**
-   - The human input is processed and improved (if necessary) using `_process_human_feedback()`. This may involve LLM calls to clarify, clean, or enhance the input, ensuring the system works with the best possible prompt.
-
-5. **Develop Prompt Template Components**
-   - The `_develop_prompt_template_components()` function extracts and constructs all necessary prompt components (such as templates, style guides, and constraints) from the processed input, ensuring the prompt is well-structured for optimization.
-
-6. **Extract Task-Specific Configurations**
-   - The following internal methods are called in order to extract all required task details:
-     - `_extract_task_description()`: Determines the detailed task description, either from the dataset or the improved input.
-     - `_extract_sample_data()`: Gathers or generates example input-output pairs (seed samples) for the task.
-     - `_extract_task_type()`: Infers the type of NLP task (e.g., classification, QA, generation).
-     - `_extract_fields()`: Identifies the required input and output fields for the task.
-     - `_extract_tools()`: Extracts any external tools or resources needed for the task (if relevant).
-
-7. **Set Training and Optimization Parameters**
-   - The training algorithm is selected using `_set_trainer()`, and the DSPy module is chosen with `_set_dspy_module()`. These determine how the optimization and training will be performed.
-   - Default values for `synthetic_data_size` (number of synthetic examples) and `train_ratio` (fraction of data for training) are set if not provided.
-
-8. **Calculate Dataset Sizes**
-   - The `_calculate_dataset_sizes()` method is called to determine the sizes of the training and validation datasets, ensuring proper data splits for training and evaluation.
-
-9. **Track LLM Usage and Cost**
-   - After all LLM calls and configuration steps, the total cost of LLM usage is calculated and stored in `llm_cost` for transparency and monitoring.
-
-10. **Cleanup**
-    - Temporary objects (such as the config model instance) are deleted to free up resources, and a final log message confirms successful configuration.
-
-Throughout this process, all LLM interactions are logged, configuration values are validated as they are set, and default values are used when appropriate. The order of operations is carefully designed so that later steps can depend on the results of earlier ones (e.g., tools extraction depends on task type). If any required information is missing or inconsistent, a `ValueError` is raised to alert the user.
 
 **Raises**
 
