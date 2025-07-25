@@ -70,27 +70,129 @@ Handles the optimization of prompts using either DSPy or meta-prompt backend.
 - `get_eval_metrics()`: Get evaluation metrics for the task type.
 - `get_final_eval_metrics()`: Get final evaluation metrics for the task type.
 
-**Internal Methods**
-- `_parse_fields(fields: Union[List[str], str]) -> List[str]`: Parse field definitions from string or list.
-- `_prepare_sample_data() -> Dict`: Prepare sample data for synthetic data generation.
-- `_create_synthetic_data_prompt(sample_data: Dict, template: Dict, batch_size: int, feedback_section: str = "") -> str`: Generate a high-quality prompt for synthetic data creation.
-- `_clean_llm_response(response: str) -> str`: Clean and format LLM response.
-- `_run_dspy_backend(initial_flag: bool = True) -> Dict`: Run optimization using DSPy backend.
-- `_run_meta_prompt_backend(initial_flag: bool = True) -> Dict`: Run optimization using meta-prompt backend with direct API calls.
-- `_evaluate_prompt_meta_backend(prompt: str) -> float`: Evaluate a prompt using the meta-prompt backend by testing it against synthetic data.
-- `_create_test_input_from_sample(sample: Dict) -> str`: Create a test input string from a sample data dictionary.
-- `_create_prediction_object(prediction_text: str, sample: Dict) -> Dict`: Create a prediction object with the expected structure for evaluation.
-- `_call_llm_api_directly(prompt: str, model: str = "") -> str`: Call LLM API directly based on the configured provider.
-- `_call_openai_api(prompt: str, model: str = "") -> str`: Call OpenAI API directly.
-- `_call_anthropic_api(prompt: str) -> str`: Call Anthropic API directly.
-- `_parse_input_fields() -> Union[str, List[str], Tuple[str, ...]]`: Parse input fields from config.
-- `_prepare_dataset(data: List[Dict]) -> List[dspy.Example]`: Prepare a dataset from input data.
-- `_prepare_datasets()`: Prepare training and validation datasets.
-- `_prepare_full_validation_dataset()`: Prepare full validation dataset if available.
-- `_initialize_trainer()`: Initialize the DSPy trainer.
-- `_compile_program(trainer, program, trainset, validset)`: Compile the program using the trainer.
-- `_prepare_results(initial_prompt: str, optimized_prompt: str, initial_score: float, optimized_score: float) -> Dict`: Prepare the final results dictionary.
-- `_validate_synthetic_data(data: Dict, task: str) -> Tuple[bool, str]`: Validate the generated synthetic data for quality and consistency.
+---
+
+## Internal and Utility Methods
+
+- **_parse_fields**
+  ```
+  def _parse_fields(fields: Union[List[str], str]) -> List[str]
+  ```
+  Parses field definitions from a string or list, ensuring a standardized list of field names for signature and data preparation.
+
+- **_prepare_sample_data**
+  ```
+  def _prepare_sample_data(self) -> Dict
+  ```
+  Prepares and parses sample data for synthetic data generation, extracting input-output pairs and formatting them for prompt construction.
+
+- **_create_synthetic_data_prompt**
+  ```
+  def _create_synthetic_data_prompt(self, sample_data: Dict, template: Dict, batch_size: int, feedback_section: str = "") -> str
+  ```
+  Generates a high-quality prompt for LLM-based synthetic data creation, incorporating sample data, templates, and optional feedback.
+
+- **_clean_llm_response**
+  ```
+  def _clean_llm_response(self, response: str) -> str
+  ```
+  Cleans and formats the raw LLM response, removing extraneous text and ensuring consistency for downstream processing.
+
+- **_run_dspy_backend**
+  ```
+  def _run_dspy_backend(self, initial_flag: bool = True) -> Dict
+  ```
+  Executes the full DSPy-based optimization pipeline, including signature creation, data preparation, training, evaluation, and result compilation.
+
+- **_run_meta_prompt_backend**
+  ```
+  def _run_meta_prompt_backend(self, initial_flag: bool = True) -> Dict
+  ```
+  Runs the meta-prompt optimization backend using direct LLM API calls and meta-prompting strategies, returning optimized prompts and evaluation results.
+
+- **_evaluate_prompt_meta_backend**
+  ```
+  def _evaluate_prompt_meta_backend(self, prompt: str) -> float
+  ```
+  Evaluates a prompt by running it against synthetic data and scoring it with the configured metrics, used primarily in the meta-prompt backend.
+
+- **_create_test_input_from_sample**
+  ```
+  def _create_test_input_from_sample(self, sample: Dict) -> str
+  ```
+  Constructs a test input string from a sample data dictionary, used for prompt evaluation and LLM input formatting.
+
+- **_create_prediction_object**
+  ```
+  def _create_prediction_object(self, prediction_text: str, sample: Dict) -> Dict
+  ```
+  Creates a prediction object with the expected structure for evaluation, combining the model's output with the original sample.
+
+- **_call_llm_api_directly**
+  ```
+  def _call_llm_api_directly(self, prompt: str, model: str = "") -> str
+  ```
+  Calls the LLM API directly based on the configured provider, handling prompt submission and response retrieval.
+
+- **_call_openai_api**
+  ```
+  def _call_openai_api(self, prompt: str, model: str = "") -> str
+  ```
+  Sends a prompt to the OpenAI API and returns the generated response.
+
+- **_call_anthropic_api**
+  ```
+  def _call_anthropic_api(self, prompt: str) -> str
+  ```
+  Sends a prompt to the Anthropic API and returns the generated response.
+
+- **_parse_input_fields**
+  ```
+  def _parse_input_fields(self) -> Union[str, List[str], Tuple[str, ...]]
+  ```
+  Parses input fields from the configuration, supporting flexible field definitions.
+
+- **_prepare_dataset**
+  ```
+  def _prepare_dataset(self, data: List[Dict]) -> List[dspy.Example]
+  ```
+  Converts raw data into DSPy Example objects for training and validation.
+
+- **_prepare_datasets**
+  ```
+  def _prepare_datasets(self)
+  ```
+  Prepares training and validation datasets, splitting and formatting data as needed for optimization.
+
+- **_prepare_full_validation_dataset**
+  ```
+  def _prepare_full_validation_dataset(self)
+  ```
+  Prepares the full validation dataset if available, ensuring comprehensive evaluation.
+
+- **_initialize_trainer**
+  ```
+  def _initialize_trainer(self)
+  ```
+  Sets up the DSPy trainer (e.g., MIPROv2) for optimization.
+
+- **_compile_program**
+  ```
+  def _compile_program(self, trainer, program, trainset, validset)
+  ```
+  Compiles the DSPy program using the trainer and datasets, preparing it for evaluation and optimization.
+
+- **_prepare_results**
+  ```
+  def _prepare_results(self, initial_prompt: str, optimized_prompt: str, initial_score: float, optimized_score: float) -> Dict
+  ```
+  Assembles the final results, including optimized prompt, scores, synthetic data, and LLM cost.
+
+- **_validate_synthetic_data**
+  ```
+  def _validate_synthetic_data(self, data: Dict, task: str) -> Tuple[bool, str]
+  ```
+  Validates generated synthetic data for quality and consistency, returning a boolean and feedback message.
 
 ---
 
