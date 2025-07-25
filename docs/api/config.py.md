@@ -332,7 +332,7 @@ Represents the available model providers for LLMs.
 
 **Members**
 - OPENAI: Use OpenAI models (e.g., GPT-4)
-- ANTHROPIC: Use Anthropic models (e.g., Claude)
+- ANTHROPIC: Use Anthropic models (e.g., Claude-3.5)
 - DATABRICKS: Use Databricks models
 - LOCAL: Use local models
 - TOGETHERAI: Use TogetherAI models
