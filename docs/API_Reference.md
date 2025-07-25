@@ -3,6 +3,13 @@
 This section documents the main classes and functions in Promptomatix.
 
 ---
+## main.py
+
+Main entry point and orchestrator for the Promptomatix CLI, session management, feedback integration, optimization workflows, and user interaction. The most important file in the system.
+
+For full documentation, see [main.py documentation](api/main.py.md).
+
+---
 ## config.py
 
 Configuration management for prompt optimization and evaluation workflows.
@@ -51,10 +58,3 @@ For full documentation, see [utils documentation](api/utils.md).
 
 ---
 
-## main.py
-
-Main entry point and orchestrator for the Promptomatix CLI, session management, feedback integration, optimization workflows, and user interaction. The most important file in the system.
-
-For full documentation, see [main.py documentation](api/main.py.md).
-
----
