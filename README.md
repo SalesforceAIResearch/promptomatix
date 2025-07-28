@@ -11,6 +11,9 @@
   <a href="https://arxiv.org/abs/2507.14241" target="_blank">
     <img src="https://img.shields.io/badge/arXiv-2507.14241-b31b1b.svg" alt="arXiv">
   </a>
+  <a href="docs/API_Reference.md" target="_blank">
+    <img src="https://img.shields.io/badge/Documentation-API-blue.svg" alt="API Documentation">
+  </a>
 </div>
 
 <p align="center">
@@ -19,6 +22,7 @@
   <a href="#-example-usage">Examples</a> |
   <a href="#-key-features">Features</a> |
   <a href="#-api-documentation">API</a> |
+  <a href="docs/API_Reference.md" target="_blank">API Docs</a> |
   <a href="#-cli-usage">CLI</a>
 </p>
 
@@ -27,6 +31,8 @@
 Promptomatix is an AI-driven framework designed to automate and optimize large language model (LLM) prompts. It provides a structured approach to prompt optimization, ensuring consistency, cost-effectiveness, and high-quality outputs while reducing the trial-and-error typically associated with manual prompt engineering.
 
 The framework leverages the power of DSPy and advanced optimization techniques to iteratively refine prompts based on task requirements, synthetic data, and user feedback. Whether you're a researcher exploring LLM capabilities or a developer building production applications, Promptomatix provides a comprehensive solution for prompt optimization.
+
+**📚 API Documentation**: Comprehensive API documentation is available in the [`docs/`](docs/) directory, including detailed reference guides for all modules and functions.
 
 ## 🏗️ Architecture
 
