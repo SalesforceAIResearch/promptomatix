@@ -21,7 +21,6 @@
   <a href="#-installation">Installation</a> |
   <a href="#-example-usage">Examples</a> |
   <a href="#-key-features">Features</a> |
-  <a href="#-api-documentation">API</a> |
   <a href="docs/API_Reference.md" target="_blank">API Docs</a> |
   <a href="#-cli-usage">CLI</a>
 </p>
