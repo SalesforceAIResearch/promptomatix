@@ -158,6 +158,19 @@ python -m src.promptomatix.main --raw_input "Given a questions about human anato
   --backend "simple_meta_prompt" \
   --synthetic_data_size 10 \
   --model_provider "openai"
+
+# Using your own CSV data files
+python -m src.promptomatix.main --raw_input "Classify the given IMDb rating" \
+  --model_name "gpt-3.5-turbo" \
+  --backend "simple_meta_prompt" \
+  --model_provider "openai" \
+  --load_data_local \
+  --local_train_data_path "/path/to/your/train_data.csv" \
+  --local_test_data_path "/path/to/your/test_data.csv" \
+  --train_data_size 50 \
+  --valid_data_size 20 \
+  --input_fields rating \
+  --output_fields category
 ```
 
 ### Python API Examples
@@ -182,6 +195,21 @@ feedback = generate_feedback(
 
 # Optimize with feedback
 improved_result = optimize_with_feedback(result['session_id'])
+
+# Using your own CSV data files
+result = process_input(
+    raw_input="Classify the given IMDb rating",
+    model_name="gpt-3.5-turbo",
+    backend="simple_meta_prompt",
+    model_provider="openai",
+    load_data_local=True,
+    local_train_data_path="/path/to/your/train_data.csv",
+    local_test_data_path="/path/to/your/test_data.csv",
+    train_data_size=50,
+    valid_data_size=20,
+    input_fields=["rating"],
+    output_fields=["category"]
+)
 ```
 #### 📁 Project Structure
 

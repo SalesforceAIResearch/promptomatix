@@ -490,15 +490,21 @@ class Config:
         self.dspy_module = self._set_dspy_module(tmp_lm)
         logger.info(f"Selected DSPy module: {self.dspy_module.__name__}")
 
-        # Set data configuration with defaults if needed
-        self.synthetic_data_size = self.synthetic_data_size or DEFAULT_SYNTHETIC_DATA_SIZE
-        logger.info(f"Synthetic data size: {self.synthetic_data_size}")
+        # Load user-provided data if available
+        self._load_user_provided_data()
 
-        self.train_ratio = self.train_ratio or DEFAULT_TRAIN_RATIO
-        logger.info(f"Train ratio: {self.train_ratio}")
-        
-        # Splitting the datasets
-        self._calculate_dataset_sizes()
+        # Set data configuration with defaults if needed (only if data not provided)
+        if not self.train_data and not self.valid_data:
+            self.synthetic_data_size = self.synthetic_data_size or DEFAULT_SYNTHETIC_DATA_SIZE
+            logger.info(f"Synthetic data size: {self.synthetic_data_size}")
+
+            self.train_ratio = self.train_ratio or DEFAULT_TRAIN_RATIO
+            logger.info(f"Train ratio: {self.train_ratio}")
+            
+            # Splitting the datasets
+            self._calculate_dataset_sizes()
+        else:
+            logger.info("Using user-provided data, skipping synthetic data generation")
 
         # At the end, after all LLM calls:
         self.llm_cost = sum([x['cost'] for x in getattr(tmp_lm, 'history', []) if x.get('cost') is not None])
@@ -1702,5 +1708,42 @@ class Config:
             f"Valid: {len(self.valid_data) if self.valid_data else 0}, "
             f"Valid Full: {len(self.valid_data_full) if self.valid_data_full else 0}"
         )
+
+    def _load_user_provided_data(self):
+        """Load user-provided training and validation data from direct input or files."""
+        # If data is already provided directly, keep it as is
+        if self.train_data or self.valid_data:
+            logger.info("Using directly provided train_data/valid_data")
+            return
+        
+        # If local data paths are provided, load from files
+        if self.local_train_data_path:
+            logger.info(f"Loading training data from: {self.local_train_data_path}")
+            
+            import pandas as pd
+            
+            # Only calculate dataset sizes if not explicitly provided
+            if not self.train_data_size or not self.valid_data_size:
+                self._calculate_dataset_sizes()
+            
+            # Load training data with size restriction
+            train_df = pd.read_csv(self.local_train_data_path)
+            if self.train_data_size and len(train_df) > self.train_data_size:
+                train_df = train_df.head(self.train_data_size)
+                logger.info(f"Restricted training data to {self.train_data_size} samples")
+            
+            self.train_data = train_df.to_dict('records')
+            logger.info(f"Loaded {len(self.train_data)} training samples")
+            
+            # Load test/validation data if path provided
+            if self.local_test_data_path:
+                logger.info(f"Loading test data from: {self.local_test_data_path}")
+                test_df = pd.read_csv(self.local_test_data_path)
+                if self.valid_data_size and len(test_df) > self.valid_data_size:
+                    test_df = test_df.head(self.valid_data_size)
+                    logger.info(f"Restricted validation data to {self.valid_data_size} samples")
+                
+                self.valid_data = test_df.to_dict('records') 
+                logger.info(f"Loaded {len(self.valid_data)} validation samples")
 
 

@@ -79,11 +79,7 @@ ORIGINAL PROMPT:
 {initial_prompt}
 
 OPTIMIZATION GUIDELINES:
-- Make the prompt more specific and actionable
-- Add clear examples where helpful
-- Ensure the output format is well-defined
-- Remove ambiguity and vagueness
-- Keep the prompt concise but comprehensive
+...
 
 OPTIMIZED PROMPT:
 """
@@ -105,6 +101,7 @@ meta_prompt = generate_my_custom_meta_prompt(initial_prompt)
 - **Include examples**: Show the expected input/output format
 - **Set constraints**: Specify length limits, tone requirements, etc.
 - **Iterative refinement**: Design prompts that can be improved through multiple iterations
+(Refer to Appendix B in our paper for more tips.)
 
 ## Custom Metrics
 
@@ -187,6 +184,7 @@ DSPy modules define how the model should approach the task. Available modules in
 - `dspy.ChainOfThought`: Step-by-step reasoning
 - `dspy.ProgramOfThought`: Code-based reasoning
 - `dspy.ReAct`: Tool-using agent
+(dspy is rapidly growing and more modules shall be added soon.)
 
 ### Using Different DSPy Modules
 
@@ -339,6 +337,7 @@ def generate_my_custom_synthetic_data(task: str, batch_size: int, example_data: 
     - Your specific requirements here
     - Additional constraints
     - Special formatting needs
+    - ...
     """
 ```
 
@@ -351,6 +350,70 @@ def _process_my_custom_dataset(self, train_dataset: Dataset, test_dataset: Datas
     # Your custom processing logic
     return train_dataset, test_dataset
 ```
+
+### Loading Your Own Data Files
+
+You can provide your own CSV data files instead of relying on synthetic data generation:
+
+#### Command Line Usage
+
+```bash
+# Using local CSV files for training and validation
+python -m src.promptomatix.main --raw_input "Classify the given IMDb rating" \
+  --model_name "gpt-3.5-turbo" \
+  --backend "simple_meta_prompt" \
+  --model_provider "openai" \
+  --load_data_local \
+  --local_train_data_path "/path/to/your/train_data.csv" \
+  --local_test_data_path "/path/to/your/test_data.csv" \
+  --train_data_size 50 \
+  --valid_data_size 20 \
+  --input_fields rating \
+  --output_fields category
+```
+
+#### Python API Usage
+
+```python
+from promptomatix.main import process_input
+
+result = process_input(
+    raw_input="Classify the given IMDb rating",
+    model_name="gpt-3.5-turbo",
+    backend="simple_meta_prompt",
+    model_provider="openai",
+    load_data_local=True,
+    local_train_data_path="/path/to/your/train_data.csv",
+    local_test_data_path="/path/to/your/test_data.csv",
+    train_data_size=50,
+    valid_data_size=20,
+    input_fields=["rating"],
+    output_fields=["category"]
+)
+```
+
+#### CSV File Format
+
+Your CSV files should have columns that match your input and output fields:
+
+**train_data.csv:**
+```csv
+rating,category
+8.5,Excellent
+7.2,Good
+4.1,Poor
+9.0,Excellent
+6.8,Good
+```
+
+**Key Parameters:**
+- `--load_data_local`: Enable loading from local files
+- `--local_train_data_path`: Path to training data CSV
+- `--local_test_data_path`: Path to test/validation data CSV  
+- `--train_data_size`: Number of training samples to use
+- `--valid_data_size`: Number of validation samples to use
+- `--input_fields`: Column names for input data
+- `--output_fields`: Column names for expected output
 
 ## Extending the CLI
 
